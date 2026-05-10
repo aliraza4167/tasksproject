@@ -1,0 +1,105 @@
+<?php
+
+namespace App\Models;
+
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Fortify\TwoFactorAuthenticatable;
+use App\Models\Task;
+use App\Models\Friendship;
+use App\Models\Profile;
+
+class User extends Authenticatable
+{
+    /** @use HasFactory<\Database\Factories\UserFactory> */
+    use HasFactory, Notifiable, TwoFactorAuthenticatable;
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+    ];
+
+    /**
+     * The attributes that should be hidden for serialization.
+     *
+     * @var list<string>
+     */
+    protected $hidden = [
+        'password',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
+        'remember_token',
+    ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'email_verified_at' => 'datetime',
+            'password' => 'hashed',
+            'two_factor_confirmed_at' => 'datetime',
+        ];
+    }
+
+    /**
+     * Get the tasks for the user.
+     */
+    public function tasks() {
+        return $this->hasMany(Task::class);
+    }
+
+    public function sentFriendRequests()
+    {
+        return $this->hasMany(Friendship::class, 'sender_id');
+    }
+
+    public function receivedFriendRequests()
+    {
+        return $this->hasMany(Friendship::class, 'receiver_id');
+    }
+
+    public function friendsOfMine()
+    {
+        return $this->hasMany(Friendship::class, 'sender_id')
+            ->where('status', 'accepted');
+    }
+
+    public function friendOf()
+    {
+        return $this->hasMany(Friendship::class, 'receiver_id')
+            ->where('status', 'accepted');
+    }
+
+    public function friends()
+    {
+        return $this->friendsOfMine()->with('receiver')->get()->pluck('receiver')
+            ->merge(
+                $this->friendOf()->with('sender')->get()->pluck('sender')
+            );
+    }
+    public function getFriendIdsExcluding()
+    {
+        $sentRequests = $this->sentFriendRequests()->pluck('receiver_id')->toArray();
+        $receivedRequests = $this->receivedFriendRequests()->pluck('sender_id')->toArray();
+        $friendIds = array_merge($sentRequests, $receivedRequests);
+
+        return $friendIds;
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
+}

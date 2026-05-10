@@ -1,0 +1,43 @@
+<?php
+
+use App\Http\Controllers\TaskController;
+use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
+use Laravel\Fortify\Features;
+use App\Http\Controllers\MessageController;
+use App\Http\Controllers\FriendshipController;
+
+Route::get('/', function () {
+    return Inertia::render('Welcome', [
+        'canRegister' => Features::enabled(Features::registration()),
+    ]);
+})->name('home');
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('dashboard', function () {
+        return Inertia::render('Dashboard');
+    })->name('dashboard');
+
+    Route::resource('tasks', TaskController::class);
+
+    Route::resource('messages', MessageController::class);  
+
+    Route::resource('friends', FriendshipController::class, ['only' => ['index']]);
+    Route::post('/friends/{user}/send', [FriendshipController::class, 'sendRequest']);
+    Route::post('/friends/{friendship}/accept', [FriendshipController::class, 'accept']);
+    Route::post('/friends/{friendship}/decline', [FriendshipController::class, 'decline']);
+    Route::delete('/friends/{user}/remove', [FriendshipController::class, 'remove']);
+});
+
+// Route::get('dashboard', function () {
+//     $user = auth()->user();
+//     // dd($user);
+//     return Inertia::render('Dashboard', [
+//         'tasks' => TaskResource::collection($user->tasks()->latest()->get()),
+//     ]);
+// })->middleware(['auth', 'verified'])->name('dashboard');
+
+// Route::resource('Tasks', TaskController::class)
+//     ->middleware(['auth', 'verified']);
+
+require __DIR__.'/settings.php';
