@@ -3,7 +3,7 @@ import Heading from '@/components/Heading.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -116,7 +116,9 @@ defineOptions({
     <div class="m-5">
         <Heading title="Friends" />
         <div v-for="friend in props.friends" :key="friend.id" class="mb-2">
-            <span>{{ friend.name }} ({{ friend.email }})</span>
+            <Link :href="'/users/' + friend.id + '/profile'">
+                {{ friend.name }} ({{ friend.email }})
+            </Link>
         </div>
     </div>
     <div class="m-5">

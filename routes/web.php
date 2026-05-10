@@ -6,6 +6,7 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\FriendshipController;
+use App\Http\Controllers\Settings\ProfileController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -21,6 +22,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::resource('tasks', TaskController::class);
 
     Route::resource('messages', MessageController::class);  
+
+    // Route::get('/user/profile', function () {
+    //     return Inertia::render('profiles/Index');
+    // })->name('profiles.index');
+
+    Route::resource('/users/{user}/profile', ProfileController::class)->only(['index']);
 
     Route::resource('friends', FriendshipController::class, ['only' => ['index']]);
     Route::post('/friends/{user}/send', [FriendshipController::class, 'sendRequest']);
