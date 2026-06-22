@@ -7,6 +7,7 @@ use Laravel\Fortify\Features;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\FriendshipController;
 use App\Http\Controllers\Settings\ProfileController;
+use App\Http\Controllers\ThreadController;
 
 Route::get('/', function () {
     return Inertia::render('Welcome', [
@@ -15,13 +16,16 @@ Route::get('/', function () {
 })->name('home');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('Dashboard');
-    })->name('dashboard');
 
     Route::resource('tasks', TaskController::class);
 
-    Route::resource('messages', MessageController::class);  
+    Route::resource('threads', ThreadController::class);
+
+    Route::post('threads/{thread}/messages', [MessageController::class, 'store'])->name('threads.messages.store');
+
+    Route::get('dashboard', function() {
+        return Inertia::render('Dashboard');
+    })->name('dashboard'); 
 
     // Route::get('/user/profile', function () {
     //     return Inertia::render('profiles/Index');

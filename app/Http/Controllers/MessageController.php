@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Message;
 use Illuminate\Http\Request;
-use App\Http\Resources\MessageResource;
+use App\Models\Thread;
 
 class MessageController extends Controller
 {
@@ -13,10 +13,7 @@ class MessageController extends Controller
      */
     public function index()
     {
-        return inertia('Messages/Index', [
-            'received_messages' => MessageResource::collection(Message::with(['sender', 'receiver'])->where('receiver_id', auth()->id())->latest()->get()),
-            'sent_messages' => MessageResource::collection(Message::with(['sender', 'receiver'])->where('sender_id', auth()->id())->latest()->get()),
-        ]);
+        //
     }
 
     /**
@@ -30,9 +27,21 @@ class MessageController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, Thread $thread)
     {
-        //
+        // dd($request->all(), $thread);
+        $validated = $request->validate([
+            'body' => 'required|string',
+        ]);
+
+        $message = Message::make($validated);
+        
+        $message->user()->associate($request->user());
+        $message->thread()->associate($thread);
+
+        $message->save();
+        // $thread->messages()->create($validated);
+        return redirect()->route('threads.show', $thread);
     }
 
     /**

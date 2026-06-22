@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use App\Models\Task;
 use App\Models\Profile;
+use App\Models\Thread;
 
 class DatabaseSeeder extends Seeder
 {
@@ -31,6 +32,28 @@ class DatabaseSeeder extends Seeder
             'email' => 'ali@example.com',
         ]);
 
-        
+        // Create threads with messages and participants
+        $threads = Thread::factory(5)
+        ->create();
+
+        foreach ($threads as $thread) {
+            // Add participants
+            $thread->participants()->attach($ali->id);
+            $randomUserId = $users->random()->id;
+            // $thread->participants()->attach($users->random()->id);
+            $thread->participants()->attach($randomUserId);
+
+            // Create messages
+            Message::factory(3)->create([
+                'thread_id' => $thread->id,
+                'user_id' => $ali->id,
+            ]);
+
+
+            Message::factory(3)->create([
+                'thread_id' => $thread->id,
+                'user_id' => $randomUserId,
+            ]);
+        }
     }
 }

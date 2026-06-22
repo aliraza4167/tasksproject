@@ -80,7 +80,7 @@ const mainNavItems: NavItem[] = [
     },
     {
         title: 'Messages',
-        href: '/messages',
+        href: '/threads',
         icon: Folder,
     },
     {
