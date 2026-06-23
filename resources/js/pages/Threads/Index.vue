@@ -62,10 +62,10 @@ defineOptions({
                     class="mb-2 text-xl font-semibold"
                     v-if="'thread.participants[0].id === auth()->user->id'"
                 >
-                    {{ thread.participants[1].name }}
+                    {{ thread.participants[0].name }}
                 </h2>
                 <h2 class="mb-2 text-xl font-semibold" v-else>
-                    {{ thread.participants[0].name }}
+                    {{ thread.participants[1].name }}
                 </h2>
             </Link>
         </div>
