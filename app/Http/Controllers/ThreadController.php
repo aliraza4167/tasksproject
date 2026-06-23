@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Thread;
 use Illuminate\Http\Request;
+use App\Http\Resources\ThreadResource;
 
 class ThreadController extends Controller
 {
@@ -14,9 +15,9 @@ class ThreadController extends Controller
     {
         $user = auth()->user();
         return inertia('Threads/Index', [
-            'threads' => Thread::whereHas('participants', function ($query) use ($user) {
+            'threads' => ThreadResource::collection(Thread::whereHas('participants', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
-            })->with('participants', 'messages')->get(),
+            })->with('participants', 'messages')->get()),
         ]);
         // return inertia('Threads/Index', [
         //     'threads' => Thread::with('participants', 'messages')->get(),

@@ -58,8 +58,15 @@ defineOptions({
                 class="rounded-lg border p-4 transition-shadow hover:shadow-md"
                 :href="`/threads/${thread.id}`"
             >
-                <h2 class="mb-2 text-xl font-semibold">{{ thread.title }}</h2>
-                <p class="text-gray-700">{{ thread.content }}</p>
+                <h2
+                    class="mb-2 text-xl font-semibold"
+                    v-if="'thread.participants[0].id === auth()->user->id'"
+                >
+                    {{ thread.participants[1].name }}
+                </h2>
+                <h2 class="mb-2 text-xl font-semibold" v-else>
+                    {{ thread.participants[0].name }}
+                </h2>
             </Link>
         </div>
     </div>
