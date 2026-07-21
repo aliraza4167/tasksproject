@@ -37,6 +37,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/friends/{user}/send', [FriendshipController::class, 'sendRequest']);
     Route::post('/friends/{friendship}/accept', [FriendshipController::class, 'accept']);
     Route::post('/friends/{friendship}/decline', [FriendshipController::class, 'decline']);
+    Route::post('/friends/{friendship}/cancel', [FriendshipController::class, 'cancelRequest']);
     Route::delete('/friends/{user}/remove', [FriendshipController::class, 'remove']);
 });
 

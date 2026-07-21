@@ -3,7 +3,7 @@ import Heading from '@/components/Heading.vue';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
 import { type BreadcrumbItem } from '@/types';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm, usePage } from '@inertiajs/vue3';
 
 const breadcrumbs: BreadcrumbItem[] = [
     {
@@ -11,6 +11,11 @@ const breadcrumbs: BreadcrumbItem[] = [
         href: dashboard().url,
     },
 ];
+
+const page = usePage();
+
+// Safely access the user
+const user = page.props.auth?.user;
 
 const props = defineProps<{
     allUsers: Array<{
@@ -29,11 +34,6 @@ const props = defineProps<{
     }>;
     pendingRequests: Array<{
         id: number;
-        sender_id: number;
-        receiver_id: number;
-        status: string;
-        created_at: string;
-        updated_at: string;
         sender: {
             id: number;
             name: string;
@@ -41,6 +41,16 @@ const props = defineProps<{
             created_at: string;
             updated_at: string;
         };
+        receiver: {
+            id: number;
+            name: string;
+            email: string;
+            created_at: string;
+            updated_at: string;
+        };
+        status: string;
+        created_at: string;
+        updated_at: string;
     }>;
 }>();
 
@@ -90,6 +100,20 @@ const rejectRequest = (value) => {
     });
 };
 
+const cancelRequest = (value) => {
+    // Implement cancel friend request logic here
+    friendForm.friendship = value;
+    friendForm.id = value.id;
+    friendForm.post('friends/' + value.id + '/cancel', {
+        onSuccess: () => {
+            console.log('Friend request canceled successfully.');
+        },
+        onError: (errors) => {
+            console.error('Error canceling friend request:', errors);
+        },
+    });
+};
+
 defineOptions({
     layout: AppLayout,
 });
@@ -128,30 +152,53 @@ defineOptions({
             :key="request.id"
             class="mb-2"
         >
-            <span>{{ request.sender.name }} ({{ request.sender.email }})</span>
-            <!-- Add buttons for accepting/rejecting friend requests here -->
-            <form
-                @submit.prevent="acceptRequest(request)"
-                class="ml-2 inline-block"
-            >
-                <button
-                    type="submit"
-                    class="rounded bg-green-500 px-2 py-1 font-bold text-white hover:bg-green-700"
+            <div v-if="request.sender.id === user.id">
+                <span
+                    >{{ request.receiver.name }} ({{
+                        request.receiver.email
+                    }})</span
                 >
-                    Accept
-                </button>
-            </form>
-            <form
-                @submit.prevent="rejectRequest(request)"
-                class="ml-2 inline-block"
-            >
-                <button
-                    type="submit"
-                    class="rounded bg-red-500 px-2 py-1 font-bold text-white hover:bg-red-700"
+                <form
+                    @submit.prevent="cancelRequest(request)"
+                    class="ml-2 inline-block"
                 >
-                    Reject
-                </button>
-            </form>
+                    <button
+                        type="submit"
+                        class="rounded bg-yellow-500 px-2 py-1 font-bold text-white hover:bg-yellow-700"
+                    >
+                        Cancel Request
+                    </button>
+                </form>
+            </div>
+            <div v-else>
+                <span
+                    >{{ request.sender.name }} ({{
+                        request.sender.email
+                    }})</span
+                >
+                <form
+                    @submit.prevent="acceptRequest(request)"
+                    class="ml-2 inline-block"
+                >
+                    <button
+                        type="submit"
+                        class="rounded bg-green-500 px-2 py-1 font-bold text-white hover:bg-green-700"
+                    >
+                        Accept
+                    </button>
+                </form>
+                <form
+                    @submit.prevent="rejectRequest(request)"
+                    class="ml-2 inline-block"
+                >
+                    <button
+                        type="submit"
+                        class="rounded bg-red-500 px-2 py-1 font-bold text-white hover:bg-red-700"
+                    >
+                        Reject
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 </template>

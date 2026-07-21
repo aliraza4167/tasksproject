@@ -22,9 +22,16 @@ class FriendshipController extends Controller
             'friends' => auth()->user()->friends(),
             'pendingRequests' => auth()->user()
                 ->receivedFriendRequests()
+                ->union(auth()->user()->sentFriendRequests()->where('status', 'pending'))
                 ->where('status', 'pending')
-                ->with('sender')
-                ->get(),
+                ->get()
+                ->map(function ($friendship) {
+                    return [
+                        'id' => $friendship->id,
+                        'sender' => new UserResource($friendship->sender),
+                        'receiver' => new UserResource($friendship->receiver),
+                    ];
+                }),
                 ]);
     }
 
@@ -121,6 +128,17 @@ class FriendshipController extends Controller
             $q->where('sender_id', $user->id)
               ->where('receiver_id', auth()->id());
         })->delete();
+
+        return back();
+    }
+
+    public function cancelRequest(Friendship $friendship)
+    {
+        if ($friendship->sender_id !== auth()->id) {
+            abort(403);
+        }
+
+        $friendship->delete($friendship);
 
         return back();
     }
