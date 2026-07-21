@@ -11,13 +11,14 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Inertia\Response;
+use App\Http\Resources\UserResource;
 
 class ProfileController extends Controller
 {
     public function index(User $user): Response
     {
         return Inertia::render('profiles/Index', [
-            'profile' => $user->profile,
+            'user' => UserResource::make($user->load('profile')),
         ]);
     }
 
