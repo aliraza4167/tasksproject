@@ -18,6 +18,7 @@ class ProfileController extends Controller
     public function index(User $user): Response
     {
         return Inertia::render('profiles/Index', [
+            // dd(Auth::user()->friends()->contains($user)),
             'user' => UserResource::make($user->load('profile')),
         ]);
     }

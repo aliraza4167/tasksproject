@@ -47,6 +47,7 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => ($request->user() ? new UserResource($request->user()) : null),
                 'profile' => $request->user() ? $request->user()->profile : null,
+                'friends' => $request->user() ? UserResource::collection($request->user()->friends()) : null,
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
             'flash' => [

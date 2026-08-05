@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppLayout from '@/layouts/AppLayout.vue';
-import { Head, useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Head, useForm, usePage } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
 
 const props = defineProps({
     user: Object,
@@ -9,6 +9,17 @@ const props = defineProps({
 
 defineOptions({
     layout: AppLayout,
+});
+
+const page = usePage();
+
+const logged_user = computed(() => page.props.auth?.user);
+const friends = computed(() => page.props.auth?.friends || []);
+const isFriend = computed(() => {
+    if (!logged_user.value || !props.user) {
+        return false;
+    }
+    return friends.value.some((friend: any) => friend.id === props.user.id);
 });
 
 const form = useForm({
@@ -92,11 +103,20 @@ const toggleStory = () => {
 
                         <!-- Action Buttons -->
                         <div class="mt-6 flex justify-center gap-3 sm:mt-0">
-                            <button
-                                class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
-                            >
-                                Message
-                            </button>
+                            <div v-if="isFriend" class="flex gap-2">
+                                <button
+                                    class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
+                                >
+                                    Message
+                                </button>
+                            </div>
+                            <div v-else class="flex gap-2">
+                                <button
+                                    class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
+                                >
+                                    Add Friend
+                                </button>
+                            </div>
                         </div>
                     </div>
 

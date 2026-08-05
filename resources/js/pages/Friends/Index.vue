@@ -125,7 +125,9 @@ defineOptions({
     <div class="m-5">
         <Heading title="All Users" />
         <div v-for="user in props.allUsers" :key="user.id" class="mb-2">
-            <span>{{ user.name }} ({{ user.email }})</span>
+            <Link :href="'/users/' + user.id + '/profile'">
+                {{ user.name }} ({{ user.email }})
+            </Link>
             <form @submit.prevent="addFriend(user)" class="ml-2 inline-block">
                 <button
                     type="submit"

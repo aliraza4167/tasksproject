@@ -102,4 +102,9 @@ class User extends Authenticatable
     {
         return $this->hasOne(Profile::class);
     }
+
+    public function isFriendWith(User $user)
+    {
+        return $this->friends()->contains($user);
+    }
 }
