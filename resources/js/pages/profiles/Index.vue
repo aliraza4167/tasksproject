@@ -32,6 +32,24 @@ const isStoryExpanded = ref(false);
 const toggleStory = () => {
     isStoryExpanded.value = !isStoryExpanded.value;
 };
+
+const friendForm = useForm({
+    friendship: null,
+    id: null,
+});
+
+const addFriend = (value) => {
+    friendForm.friendship = value;
+    friendForm.id = value.id;
+    friendForm.post('friends/' + value.id + '/send', {
+        onSuccess: () => {
+            console.log('Friend request sent successfully.');
+        },
+        onError: (errors) => {
+            console.error('Error sending friend request:', errors);
+        },
+    });
+};
 </script>
 
 <template>
@@ -111,11 +129,17 @@ const toggleStory = () => {
                                 </button>
                             </div>
                             <div v-else class="flex gap-2">
-                                <button
-                                    class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition hover:bg-gray-50 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:outline-none"
+                                <form
+                                    @submit.prevent="addFriend(user)"
+                                    class="ml-2 inline-block"
                                 >
-                                    Add Friend
-                                </button>
+                                    <button
+                                        type="submit"
+                                        class="rounded bg-blue-500 px-2 py-1 font-bold text-white hover:bg-blue-700"
+                                    >
+                                        Add Friend
+                                    </button>
+                                </form>
                             </div>
                         </div>
                     </div>
