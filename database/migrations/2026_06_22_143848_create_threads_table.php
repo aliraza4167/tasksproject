@@ -14,7 +14,10 @@ return new class extends Migration
         Schema::create('threads', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->timestamps();
+            $table->foreignId('topic_id')->nullable()->constrained()->nullOnDelete();
+            $table->boolean('is_anonymous')->default(false);
+            $table->string('trigger_warning')->nullable(); // e.g., "Loss of loved one"
+            $table->enum('type', ['seeking_support', 'sharing_story', 'resource', 'offering_help'])->default('seeking_support');
         });
     }
 
