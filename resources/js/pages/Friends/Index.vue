@@ -15,7 +15,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 const page = usePage();
 
 // Safely access the user
-const user = page.props.auth?.user;
+const logged_user = page.props.auth?.user;
 
 const props = defineProps<{
     allUsers: Array<{
@@ -90,12 +90,12 @@ const rejectRequest = (value) => {
     // Implement reject friend request logic here
     friendForm.friendship = value;
     friendForm.id = value.id;
-    friendForm.post('friends/' + value.id + '/reject', {
+    friendForm.post('friends/' + value.id + '/decline', {
         onSuccess: () => {
-            console.log('Friend request rejected successfully.');
+            console.log('Friend request declined successfully.');
         },
         onError: (errors) => {
-            console.error('Error rejecting friend request:', errors);
+            console.error('Error declining friend request:', errors);
         },
     });
 };
@@ -154,7 +154,7 @@ defineOptions({
             :key="request.id"
             class="mb-2"
         >
-            <div v-if="request.sender.id === user.id">
+            <div v-if="request.sender.id === logged_user.id">
                 <span
                     >{{ request.receiver.name }} ({{
                         request.receiver.email

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->boolean('is_anonymous')->default(false);
             $table->string('trigger_warning')->nullable(); // e.g., "Loss of loved one"
             $table->enum('type', ['seeking_support', 'sharing_story', 'resource', 'offering_help'])->default('seeking_support');
+            $table->timestamps();
         });
     }
 

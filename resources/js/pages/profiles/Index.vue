@@ -130,7 +130,7 @@ const addFriend = (value) => {
                             </div>
                             <div v-else class="flex gap-2">
                                 <form
-                                    @submit.prevent="addFriend(user)"
+                                    @submit.prevent="addFriend(props.user)"
                                     class="ml-2 inline-block"
                                 >
                                     <button
